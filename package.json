@@ -1,0 +1,27 @@
+{
+  "name": "wood-mongo",
+  "version": "1.0.2",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://jlego@github.com/jlego/wood-mongo.git"
+  },
+  "keywords": [
+    "wood-mongo"
+  ],
+  "author": "jlego",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jlego/wood-mongo/issues"
+  },
+  "homepage": "https://github.com/jlego/wood-mongo#readme",
+  "dependencies": {
+    "mongodb": "^3.1.10",
+    "wood-query": "^1.0.3",
+    "wood-util": "^1.0.1"
+  }
+}
