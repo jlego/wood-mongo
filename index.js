@@ -10,8 +10,7 @@ module.exports = async (app, config = {}) => {
   if(app){
     app.Mongo = Mongo;
     for (let key in config) {
-      let result = await catchErr(Mongo.connect(config[key], key));
-      if(result.err) throw error(err);
+      await Mongo.connect(config[key], key);
     }
   }
   return Mongo;
