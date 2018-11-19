@@ -5,8 +5,9 @@
  */
 const Mongo = require('./src/mongo');
 
-module.exports = (app = {}, config = {}) => {
-  app.Mongo = Mongo;
-  if(app.addAppProp) app.addAppProp('Mongo', app.Mongo);
+module.exports = async (app = {}, config = {}) => {
+  for (let key in config) {
+    await Mongo.connect(config[key], key);
+  }
   return app;
 }

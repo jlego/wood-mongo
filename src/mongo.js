@@ -1,8 +1,8 @@
 // mongodb操作方法类
 // by YuRonghui 2018-2-6
-const Query = require('wood-query')();
+const { Query } = require('wood-query')();
 const mongodb = require('mongodb');
-const { error } = require('wood-util')();
+const { Util } = require('wood-util')();
 const ObjectId = mongodb.ObjectID;
 let dbs = {};
 
@@ -13,7 +13,7 @@ class Mongo {
     if(dbs[this.db]) {
       this.collection = dbs[this.db].collection(this.tableName);
     }else{
-      throw error('mongodb failed: db=null');
+      throw Util.error('mongodb failed: db=null');
     }
   }
   // 获取
