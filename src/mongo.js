@@ -9,6 +9,7 @@ let dbs = {};
 class Mongo {
   constructor(tbname, db = 'master') {
     this.tableName = tbname;
+    this.ObjectId = ObjectId;
     this.db = db;
     if(dbs[this.db]) {
       this.collection = dbs[this.db].collection(this.tableName);
