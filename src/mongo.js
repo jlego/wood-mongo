@@ -21,13 +21,18 @@ class Mongo {
     if (obj._isQuery) {
       return obj.toJSON();
     } else {
-      if (!obj.where) {
-        obj = { where: obj };
-      }else{
-        if (obj.where._id) obj.where._id = ObjectId(obj.where._id);
-      }
+      if (!obj.where) obj = { where: obj };
       let query = new Query(obj);
-      return query.toJSON();
+      let result = query.toJSON();
+      if(result.where._id){
+        if(typeof result.where._id === 'string'){
+          result.where._id = ObjectId(result.where._id);
+        }else if(typeof result.where._id === 'object'){
+          if(result.where._id.$in) result.where._id.$in = result.where._id.$in.map(val => ObjectId(val));
+          if(result.where._id.$eq) result.where._id.$eq = ObjectId(result.where._id.$eq);
+        }
+      }
+      return result;
     }
   }
   // 建索引
