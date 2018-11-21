@@ -9,7 +9,6 @@ let dbs = {};
 class Mongo {
   constructor(tbname, db = 'master') {
     this.tableName = tbname;
-    this.ObjectId = ObjectId;
     this.db = db;
     if(dbs[this.db]) {
       this.collection = dbs[this.db].collection(this.tableName);
@@ -35,6 +34,16 @@ class Mongo {
       }
       return result;
     }
+  }
+  // 自增id
+  async rowid(tbName){
+    let idsTable = dbs[this.db].collection('ids');
+    let result = await Util.catchErr(idsTable.findOneAndUpdate({"name":tbName || this.tableName}, {$inc:{'id':1}}, {
+        upsert: true,
+        returnNewDocument: true
+      }));
+    if(result.err) throw Util.error(result.err);
+    return result.data.value.id;
   }
   // 建索引
   index(data = {}, opts = {
