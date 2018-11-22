@@ -55,12 +55,12 @@ class Mongo {
   // 查询全部记录
   find(params = {}) {
     let data = this._getParams(params);
-    return this.collection.find(data.where, {fields: data.select }).sort(data.sort).toArray();
+    return this.collection.find(data.where, {projection: data.select }).sort(data.sort).toArray();
   }
   // 查询单条记录
   findOne(params = {}) {
     let data = this._getParams(params);
-    return this.collection.findOne(data.where, {fields: data.select });
+    return this.collection.findOne(data.where, {projection: data.select });
   }
   // 删除
   remove(params = {}) {
