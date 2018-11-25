@@ -4,6 +4,7 @@ const { Query } = require('wood-query')();
 const mongodb = require('mongodb');
 const { Util } = require('wood-util')();
 const ObjectId = mongodb.ObjectID;
+const { catchErr, error } = WOOD;
 let dbs = {};
 
 class Mongo {
@@ -13,7 +14,7 @@ class Mongo {
     if(dbs[this.db]) {
       this.collection = dbs[this.db].collection(this.tableName);
     }else{
-      throw Util.error('mongodb failed: db=null');
+      throw error('mongodb failed: db=null');
     }
   }
   // 获取
@@ -38,18 +39,18 @@ class Mongo {
   // 自增id
   async rowid(tbName){
     let idsTable = dbs[this.db].collection('ids');
-    let result = await Util.catchErr(idsTable.findOneAndUpdate({"name":tbName || this.tableName}, {$inc:{'id':1}}, {
+    let result = await catchErr(idsTable.findOneAndUpdate({"name":tbName || this.tableName}, {$inc:{'id':1}}, {
         upsert: true,
         returnNewDocument: true
       }));
-    if(result.err) throw Util.error(result.err);
+    if(result.err) throw error(result.err);
     return result.data.value.id;
   }
   // 建索引
   index(data = {}, opts = {
     background: true
   }) {
-    if (WOOD.config.isDebug) console.warn(`建立索引: ${JSON.stringify(data)}`);
+    if (config.env === 'development') console.warn(`建立索引: ${JSON.stringify(data)}`);
     this.collection.createIndex(data, opts);
   }
   // 查询全部记录
