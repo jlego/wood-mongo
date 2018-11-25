@@ -4,7 +4,7 @@ const { Query } = require('wood-query')();
 const mongodb = require('mongodb');
 const { Util } = require('wood-util')();
 const ObjectId = mongodb.ObjectID;
-const { catchErr, error } = WOOD;
+const { catchErr, error, config } = WOOD;
 let dbs = {};
 
 class Mongo {
