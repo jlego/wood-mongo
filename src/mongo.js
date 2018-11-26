@@ -4,17 +4,17 @@ const { Query } = require('wood-query')();
 const mongodb = require('mongodb');
 const { Util } = require('wood-util')();
 const ObjectId = mongodb.ObjectID;
-const { catchErr, error, config } = WOOD;
 let dbs = {};
 
 class Mongo {
-  constructor(tbname, db = 'master') {
+  constructor(tbname, db = 'master', ctx) {
     this.tableName = tbname;
     this.db = db;
+    this.ctx = ctx;
     if(dbs[this.db]) {
       this.collection = dbs[this.db].collection(this.tableName);
     }else{
-      throw error('mongodb failed: db=null');
+      throw this.ctx.error('mongodb failed: db=null');
     }
   }
   // 获取
@@ -39,18 +39,18 @@ class Mongo {
   // 自增id
   async rowid(tbName){
     let idsTable = dbs[this.db].collection('ids');
-    let result = await catchErr(idsTable.findOneAndUpdate({"name":tbName || this.tableName}, {$inc:{'id':1}}, {
+    let result = await this.ctx.catchErr(idsTable.findOneAndUpdate({"name":tbName || this.tableName}, {$inc:{'id':1}}, {
         upsert: true,
         returnNewDocument: true
       }));
-    if(result.err) throw error(result.err);
+    if(result.err) throw this.ctx.error(result.err);
     return result.data.value.id;
   }
   // 建索引
   index(data = {}, opts = {
     background: true
   }) {
-    if (config.env === 'development') console.warn(`建立索引: ${JSON.stringify(data)}`);
+    if (this.ctx.config.env === 'development') console.warn(`建立索引: ${JSON.stringify(data)}`);
     this.collection.createIndex(data, opts);
   }
   // 查询全部记录
