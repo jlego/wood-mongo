@@ -47,11 +47,9 @@ class Mongo {
     return result.data.value.id;
   }
   // 建索引
-  index(data = {}, opts = {
-    background: true
-  }) {
+  index(data = {}, opts = {}) {
     if (this.ctx.config.env === 'development') console.warn(`建立索引: ${JSON.stringify(data)}`);
-    this.collection.createIndex(data, opts);
+    this.collection.createIndex(data, {background: true, ...opts});
   }
   // 查询全部记录
   find(params = {}) {
