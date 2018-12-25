@@ -39,12 +39,11 @@ class Mongo {
   // 自增id
   async rowid(tbName){
     let idsTable = dbs[this.db].collection('ids');
-    let result = await catchErr(idsTable.findOneAndUpdate({"name":tbName || this.tableName}, {$inc:{'id':1}}, {
+    let result = await idsTable.findOneAndUpdate({"name":tbName || this.tableName}, {$inc:{'id':1}}, {
         upsert: true,
         returnNewDocument: true
-      }));
-    if(result.err) throw error(result.err);
-    return result.data.value.id;
+      });
+    return result.value.id;
   }
   // 建索引
   index(data = {}, opts = {}) {
