@@ -1,8 +1,7 @@
 ﻿// mongodb操作方法类
-// by YuRonghui 2018-2-6
+// by YuRonghui 2020-7-22
 const { Query } = require('wood-query')();
 const mongodb = require('mongodb');
-const { Util } = require('wood-util')();
 const { ObjectId, AggregationCursor } = mongodb;
 let dbs = {};
 
@@ -18,7 +17,6 @@ class Mongo {
   }
   // 获取
   _getParams(obj = {}) {
-    const { catchErr, error } = WOOD;
     if (!obj.where) obj = { where: obj };
     let query = obj._isQuery ? obj : new Query(obj);
     let result = query.toJSON();
@@ -59,7 +57,9 @@ class Mongo {
   // 查询全部记录
   find(params = {}) {
     let data = this._getParams(params);
-    return this.collection.find(data.where, {projection: data.select }).sort(data.sort).toArray();
+    let query = this.collection.find(data.where, {projection: data.select })
+    if(data.skip) query = query.skip(data.skip)
+    return query.limit(data.limit).sort(data.sort).toArray()
   }
   // 查询单条记录
   findOne(params = {}) {
@@ -71,6 +71,11 @@ class Mongo {
     let data = this._getParams(params);
     return this.collection.deleteMany(data.where);
   }
+  // 删除
+  deleteOne(params = {}, opts = {}) {
+    let data = this._getParams(params);
+    return this.collection.deleteOne(data.where, opts);
+  }
   // 清空
   clear() {
     return this.remove({});
@@ -81,15 +86,18 @@ class Mongo {
     return this.collection.findOneAndUpdate(data.where, val, opts);
   }
   // 更新
-  update(params = {}, val = {}) {
+  update(params = {}, val = {}, opts = {}) {
     let data = this._getParams(params);
-    // console.warn(data.where, val);
-    return this.collection.updateOne(data.where, val);
+    return this.collection.updateOne(data.where, val, opts);
   }
   // 批量更新
-  updateMany(params = {}, val = {}) {
+  updateMany(params = {}, val = {}, opts = {}) {
     let data = this._getParams(params);
-    return this.collection.updateMany(data.where, val);
+    return this.collection.updateMany(data.where, val, opts);
+  }
+
+  startSession(opts = {}) {
+    return this.client.startSession(opts)
   }
   // 新增记录
   create(data = {}) {
@@ -125,7 +133,7 @@ class Mongo {
       dbName = optsArr[optsArr.length - 1];
     }
     return new Promise((resolve, reject) => {
-      mongodb.MongoClient.connect(opts, (err, client) => {
+      mongodb.MongoClient.connect(opts, { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) => {
         if (err) {
           console.log(`MongoDB [${name}] failed :` + err.message);
           dbs[name] = null;
